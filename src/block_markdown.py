@@ -1,8 +1,10 @@
+import re
 from enum import Enum
 from typing import List
-from htmlnode import HTMLNode, ParentNode, LeafNode
-from textnode import text_node_to_html_node
+
+from html_node import HTMLNode, LeafNode, ParentNode
 from inline_markdown import text_to_textnodes
+from text_node import text_node_to_html_node
 
 
 class BlockDelimiters(Enum):
@@ -28,7 +30,7 @@ def markdown_to_blocks(markdown: str) -> List[str]:
     return cleaned_blocks
 
 
-def block_to_block_type(block) -> BlockDelimiters:
+def block_to_block_type(block: str) -> BlockDelimiters:
     lines = block.split("\n")
 
     if block.startswith("#"):

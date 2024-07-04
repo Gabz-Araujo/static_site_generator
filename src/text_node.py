@@ -1,5 +1,5 @@
 from enum import Enum
-from htmlnode import HTMLNode, LeafNode, PropsDict
+from html_node import HTMLNode, LeafNode, PropsDict
 from typing import Optional
 
 

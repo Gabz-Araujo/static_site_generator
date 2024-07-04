@@ -1,6 +1,6 @@
 from enum import Enum
 import re
-from textnode import TextNode, TextType
+from text_node import TextNode, TextType
 from typing import List
 
 
@@ -150,25 +150,13 @@ def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
     return new_nodes
 
 
-def extract_markdown_images(text: str) -> List[(str)]:
-    pattern = r"!\[(.*?)\]\((.*?)\)"
-    matches = re.findall(pattern, text)
-    return matches
-
-
-def extract_markdown_links(text) -> List[(str)]:
-    pattern = r"\[(.*?)\]\((.*?)\)"
-    matches = re.findall(pattern, text)
-    return matches
-
-
 def text_to_textnodes(text: str) -> List[TextNode]:
     nodes = [TextNode(text, "text")]
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
     nodes = split_nodes_delimiter(nodes, "**")
     nodes = split_nodes_delimiter(nodes, "__")
     nodes = split_nodes_delimiter(nodes, "*")
     nodes = split_nodes_delimiter(nodes, "_")
     nodes = split_nodes_delimiter(nodes, "`")
-    nodes = split_nodes_image(nodes)
-    nodes = split_nodes_link(nodes)
     return nodes

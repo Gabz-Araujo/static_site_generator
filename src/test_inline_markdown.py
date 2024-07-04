@@ -4,11 +4,11 @@ from inline_markdown import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
-    extract_markdown_links,
-    extract_markdown_images,
+    extract_markdown_link,
+    extract_markdown_image,
 )
 
-from textnode import TextNode
+from text_node import TextNode
 
 
 class TextInlineMarkdown(unittest.TestCase):
@@ -46,7 +46,7 @@ class TextInlineMarkdown(unittest.TestCase):
 
     def test_extract_image(self):
         text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
-        result = extract_markdown_images(text)
+        result = extract_markdown_image(text)
         expected = [
             (
                 "image",
@@ -61,7 +61,7 @@ class TextInlineMarkdown(unittest.TestCase):
 
     def test_extract_link(self):
         text = "This is text with a [link](https://www.google.com) and [another](https://www.yahoo.com)"
-        result = extract_markdown_links(text)
+        result = extract_markdown_link(text)
         expected = [
             ("link", "https://www.google.com"),
             ("another", "https://www.yahoo.com"),
@@ -87,13 +87,13 @@ class TextInlineMarkdown(unittest.TestCase):
 
     def test_split_nodes_link(self):
         node = TextNode(
-            "This is a [link](https://www.google.com) and [another](https://www.yahoo.com)",
+            "This is a [link](https://www.google.com/new_page) and [another](https://www.yahoo.com)",
             "text",
         )
         result = split_nodes_link([node])
         expected = [
             TextNode("This is a ", "text"),
-            TextNode("link", "link", "https://www.google.com"),
+            TextNode("link", "link", "https://www.google.com/new_page"),
             TextNode(" and ", "text"),
             TextNode("another", "link", "https://www.yahoo.com"),
         ]
