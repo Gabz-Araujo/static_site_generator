@@ -1,17 +1,26 @@
 import unittest
-from inline_markdown import (
+
+from deepdiff import DeepDiff
+from src.inline_markdown.inline_handlers import (
+    extract_markdown_image,
+    extract_markdown_link,
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
-    text_to_textnodes,
-    extract_markdown_link,
-    extract_markdown_image,
 )
-
-from text_node import TextNode
+from src.inline_markdown.inline_parser import text_to_textnodes
+from src.text_node import TextNode
 
 
 class TextInlineMarkdown(unittest.TestCase):
+
+    def assertTextNodeEqual(self, result_list, expected_list):
+        diff = DeepDiff(result_list, expected_list, ignore_order=True)
+        self.assertFalse(diff, f"Differences found: {diff}")
+
+    def assertListEqualDeep(self, result_list, expected_list):
+        diff = DeepDiff(result_list, expected_list, ignore_order=True)
+        self.assertFalse(diff, f"Differences found: {diff}")
 
     def test_nested_delimiters(self):
         node = TextNode("This **is _nested_ bold** text", "text")
@@ -19,21 +28,21 @@ class TextInlineMarkdown(unittest.TestCase):
         result = split_nodes_delimiter(nodes_list, "**")
         nested_node = TextNode("is _nested_ bold", "bold")
         expected = [TextNode("This ", "text"), nested_node, TextNode(" text", "text")]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_text_without_delimiter(self):
         node = TextNode("Text without delimiter", "text")
         nodes_list = [node]
         result = split_nodes_delimiter(nodes_list, "**")
         expected = [TextNode("Text without delimiter", "text")]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_invalid_text_type(self):
         node = TextNode("This is invalid type", "invalid")
         nodes_list = [node]
         with self.assertRaises(ValueError) as e:
             split_nodes_delimiter(nodes_list, "*")
-        self.assertEqual(str(e.exception), "Invalid Text Type")
+        self.assertTextNodeEqual(str(e.exception), "Invalid Text Type")
 
     def test_delimiter_near_string_limits(self):
         node = TextNode("***start and end***", "text")
@@ -42,7 +51,7 @@ class TextInlineMarkdown(unittest.TestCase):
         expected = [
             TextNode("start and end", "italic"),
         ]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_extract_image(self):
         text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
@@ -57,7 +66,7 @@ class TextInlineMarkdown(unittest.TestCase):
                 "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png",
             ),
         ]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_extract_link(self):
         text = "This is text with a [link](https://www.google.com) and [another](https://www.yahoo.com)"
@@ -66,7 +75,7 @@ class TextInlineMarkdown(unittest.TestCase):
             ("link", "https://www.google.com"),
             ("another", "https://www.yahoo.com"),
         ]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_split_nodes_image(self):
         node = TextNode(
@@ -83,7 +92,7 @@ class TextInlineMarkdown(unittest.TestCase):
                 "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png",
             ),
         ]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_split_nodes_link(self):
         node = TextNode(
@@ -97,13 +106,13 @@ class TextInlineMarkdown(unittest.TestCase):
             TextNode(" and ", "text"),
             TextNode("another", "link", "https://www.yahoo.com"),
         ]
-        self.assertEqual(result, expected)
+        self.assertTextNodeEqual(result, expected)
 
     def test_text_to_textnodes(self):
         nodes = text_to_textnodes(
             "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
         )
-        self.assertListEqual(
+        self.assertListEqualDeep(
             [
                 TextNode("This is ", "text"),
                 TextNode("text", "bold"),

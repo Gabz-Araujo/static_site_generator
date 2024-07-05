@@ -57,9 +57,9 @@ These universal themes lend the series a profound philosophical depth, making it
 
 The shadow that _The Lord of the Rings_ casts over the fantasy genre is both vast and deep, having inspired countless authors, artists, and filmmakers. Its legacy is evident in:
 
-- The archetypal "hero's journey" that has become a staple of fantasy narratives
-- The trope of the "fellowship," a diverse group banding together to face a common foe
-- The concept of a richly detailed fantasy world, which has become a benchmark for the genre
+1. The archetypal "hero's journey" that has become a staple of fantasy narratives
+2. The trope of the "fellowship," a diverse group banding together to face a common foe
+3. The concept of a richly detailed fantasy world, which has become a benchmark for the genre
 
 ## Conclusion
 

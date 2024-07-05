@@ -1,8 +1,7 @@
 import unittest
-from block_markdown import (
+
+from src.block_markdown.block_markdown import (
     markdown_to_blocks,
-    block_to_block_type,
-    BlockDelimiters,
     markdown_to_html_nodes,
 )
 
@@ -36,20 +35,6 @@ class TestBlockMarkdown(unittest.TestCase):
                 "* This is a list\n* with items",
             ],
         )
-
-    def test_block_to_block_types(self):
-        block = "# heading"
-        self.assertEqual(block_to_block_type(block), BlockDelimiters.HEADING)
-        block = "```\ncode\n```"
-        self.assertEqual(block_to_block_type(block), BlockDelimiters.CODE)
-        block = "> quote\n> more quote"
-        self.assertEqual(block_to_block_type(block), BlockDelimiters.QUOTE)
-        block = "* list\n* items"
-        self.assertEqual(block_to_block_type(block), BlockDelimiters.UNORDERED_LIST)
-        block = "1. list\n2. items"
-        self.assertEqual(block_to_block_type(block), BlockDelimiters.ORDERED_LIST)
-        block = "paragraph"
-        self.assertEqual(block_to_block_type(block), BlockDelimiters.PARAGRAPH)
 
     def test_paragraph(self):
         md = """

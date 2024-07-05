@@ -1,14 +1,9 @@
-from enum import Enum
 import re
-from text_node import TextNode, TextType
 from typing import List
 
+from text_node import TextNode, TextType
 
-class InlineDelimiters(Enum):
-    TEXT = ""
-    BOLD = ("__", "**")
-    ITALIC = ("_", "*")
-    CODE = "`"
+from .inline_types import InlineDelimiters
 
 
 def text_type_delimiter_map(delimiter: str) -> InlineDelimiters:
@@ -48,11 +43,10 @@ def split_nodes_delimiter(
                 for n in nodes:
                     if n.text.strip():
                         new_nodes.append(n)
-
                 added_to_new_nodes = True
                 break
 
-        if (not added_to_new_nodes) and node.text.strip():
+        if not added_to_new_nodes and node.text.strip():
             new_nodes.append(node)
 
     return new_nodes
@@ -87,25 +81,22 @@ def split_nodes_recursively(
     suffix = text[start:]
     parts.append(TextNode(suffix, TextType.TEXT.value))
 
-    for part in parts:
-        if not part.text.strip():
-            parts.remove(part)
+    parts = [part for part in parts if part.text.strip()]
 
     return parts
 
 
 def extract_markdown_image(text: str) -> List[(str)]:
-    matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
-    return matches
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
 
 def extract_markdown_link(text: str) -> List[(str)]:
-    matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
-    return matches
+    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
 
 
 def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
     new_nodes = []
+
     for node in old_nodes:
         if node.text_type.lower() == "text":
             images = extract_markdown_image(node.text)
@@ -125,11 +116,13 @@ def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
                 new_nodes.append(node)
         else:
             new_nodes.append(node)
+
     return new_nodes
 
 
 def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
     new_nodes = []
+
     for node in old_nodes:
         if node.text_type.lower() == "text":
             links = extract_markdown_link(node.text)
@@ -147,16 +140,5 @@ def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
                 new_nodes.append(node)
         else:
             new_nodes.append(node)
+
     return new_nodes
-
-
-def text_to_textnodes(text: str) -> List[TextNode]:
-    nodes = [TextNode(text, "text")]
-    nodes = split_nodes_image(nodes)
-    nodes = split_nodes_link(nodes)
-    nodes = split_nodes_delimiter(nodes, "**")
-    nodes = split_nodes_delimiter(nodes, "__")
-    nodes = split_nodes_delimiter(nodes, "*")
-    nodes = split_nodes_delimiter(nodes, "_")
-    nodes = split_nodes_delimiter(nodes, "`")
-    return nodes
